@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using IdentityServer.Enums;
+using IdentityServer.Models;
+using IdentityServer.Models.Data;
+using IdentityServer.Models.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers
@@ -7,6 +11,29 @@ namespace IdentityServer.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-       
+        private readonly IAccountRepository _accountRepository;
+
+        public AccountController(IAccountRepository accountRepository)
+        {
+            _accountRepository = accountRepository;
+        }
+
+        [HttpPost("sign-up")]
+        [ProducesResponseType(typeof(Result<Account>),  StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAccount([FromBody] AccountRequest request)
+        {
+            var result = await _accountRepository.CreateAsync(new Account
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Password = request.Password,
+                PhoneNumber = request.PhoneNumber,
+                Status =  Status.Unverified,
+                DateCreated = DateTime.Now,
+            });
+
+            return Ok(result);
+        }
     }
 }

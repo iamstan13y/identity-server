@@ -1,12 +1,14 @@
-﻿namespace IdentityServer.Models.Repository
+﻿using IdentityServer.Models.Data;
+
+namespace IdentityServer.Models.Repository
 {
     public interface IAccountRepository
     {
-        Task<Account> CreateAsync(Account account);
-        Task<Account> GetByIdAsync(int id);
-        Task<IEnumerable<Account>> GetAllAsync();
-        Task<Account> UpdateAsync(Account account);
-        Task<bool> DeleteAsync(Account account);
+        Task<Result<Account>> CreateAsync(Account account);
+        Task<Result<Account>> GetByIdAsync(int id);
+        Task<Result<IEnumerable<Account>>> GetAllAsync();
+        Task<Result<Account>> UpdateAsync(Account account);
+        Task<Result<bool>> DeleteAsync(Account account);
 
     }
 }
