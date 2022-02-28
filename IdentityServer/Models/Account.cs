@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using IdentityServer.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IdentityServer.Models
@@ -13,6 +14,7 @@ namespace IdentityServer.Models
         public string? PhoneNumber { get; set; }
         public string? Password { get; set; }
         public DateTime DateCreated { get; set; }
+        public Status Status { get; set; }
         [NotMapped]
         public string? Token { get; set; }
 
