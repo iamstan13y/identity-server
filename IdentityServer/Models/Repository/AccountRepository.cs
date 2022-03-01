@@ -1,5 +1,6 @@
 ﻿using IdentityServer.Models.Data;
 using IdentityServer.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Models.Repository
 {
@@ -55,6 +56,16 @@ namespace IdentityServer.Models.Repository
             throw new NotImplementedException();
         }
 
+
+        public async Task<Result<Account>> LoginAsync(LoginRequest login)
+        {
+            var account = await _context.Accounts!.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+
+            if (account == null || _passwordService.VerifyHash(login.Password!, account!.Password!) == false)
+                return new Result<Account>(false, new List<string>() { "Username or password is incorrect!"});
+
+            return new Result<Account>(account);
+        }
         public bool IsUniqueUser(string email)
         {
             var user = _context.Accounts!.SingleOrDefault(x => x.Email == email);
