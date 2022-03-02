@@ -8,11 +8,13 @@ namespace IdentityServer.Models.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordService _passwordService;
-        
-        public AccountRepository(ApplicationDbContext context, IPasswordService passwordService)
+        private readonly IJwtService _jwtService;
+
+        public AccountRepository(ApplicationDbContext context, IPasswordService passwordService, IJwtService jwtService)
         {
             _context = context;
             _passwordService = passwordService;
+            _jwtService = jwtService;
         }
 
         public async Task<Result<Account>> CreateAsync(Account account)
@@ -64,9 +66,12 @@ namespace IdentityServer.Models.Repository
             if (account == null || _passwordService.VerifyHash(login.Password!, account!.Password!) == false)
                 return new Result<Account>(false, new List<string>() { "Username or password is incorrect!"});
 
+            account.Token = await _jwtService.GenerateToken(account);
+            account.Password = "*************";
+
             return new Result<Account>(account);
         }
-        public bool IsUniqueUser(string email)
+        private bool IsUniqueUser(string email)
         {
             var user = _context.Accounts!.SingleOrDefault(x => x.Email == email);
 
