@@ -10,6 +10,6 @@ namespace IdentityServer.Models.Repository
         Task<Result<Account>> UpdateAsync(Account account);
         Task<Result<bool>> DeleteAsync(Account account);
         Task<Result<Account>> LoginAsync(LoginRequest login);
-
+        Task<Result<Account>> ChangePasswordAsync(ChangePasswordRequest changePassword);
     }
 }

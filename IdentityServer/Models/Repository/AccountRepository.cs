@@ -48,9 +48,13 @@ namespace IdentityServer.Models.Repository
             throw new NotImplementedException();
         }
 
-        public Task<Result<Account>> GetByIdAsync(int id)
+        public async Task<Result<Account>> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var account = await _context.Accounts!.SingleOrDefaultAsync(x => x.Id == id);
+            if (account == null)
+                return new Result<Account>(false, new List<string>() { "User not found"});
+
+            return new Result<Account>(account);
         }
 
         public Task<Result<Account>> UpdateAsync(Account account)
@@ -62,7 +66,7 @@ namespace IdentityServer.Models.Repository
         public async Task<Result<Account>> LoginAsync(LoginRequest login)
         {
             var account = await _context.Accounts!.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
-
+            
             if (account == null || _passwordService.VerifyHash(login.Password!, account!.Password!) == false)
                 return new Result<Account>(false, new List<string>() { "Username or password is incorrect!"});
 
@@ -77,6 +81,22 @@ namespace IdentityServer.Models.Repository
 
             if (user == null) return true;
             return false;
+        }
+
+        public async Task<Result<Account>> ChangePasswordAsync(ChangePasswordRequest changePassword)
+        {
+            var account = await GetByIdAsync(changePassword.UserId);
+            if (!account.Success) return account;
+
+            if (_passwordService.VerifyHash(changePassword.OldPassword!, account.Data!.Password!) == false)
+                return new Result<Account>(false, new List<string>() { "Old password mismatch"});
+
+            account.Data.Password = _passwordService.HashPassword(changePassword.NewPassword!);
+
+            _context.Accounts!.Update(account.Data);
+            await _context.SaveChangesAsync();
+
+            return new Result<Account>(account.Data);
         }
     }
 }

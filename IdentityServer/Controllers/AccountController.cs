@@ -48,5 +48,16 @@ namespace IdentityServer.Controllers
             
             return Ok(result);
         }
+
+        [HttpPost("change-password")]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            var result = await _accountRepository.ChangePasswordAsync(request);
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }
