@@ -51,13 +51,21 @@ namespace IdentityServer.Controllers
 
         [HttpPost("change-password")]
         [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
             var result = await _accountRepository.ChangePasswordAsync(request);
             if (!result.Success) return BadRequest(result);
 
             return Ok(result);
+        }
+
+        [HttpGet("reset-password/verification-code/{email}")]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            var result = await _accountRepository.GetResetPasswordCodeAsync(email);
         }
     }
 }

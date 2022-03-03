@@ -98,5 +98,16 @@ namespace IdentityServer.Models.Repository
 
             return new Result<Account>(account.Data);
         }
+
+        public async Task<Result<string>> GetResetPasswordCodeAsync(string email)
+        {
+            var account = await _context.Accounts!.SingleOrDefaultAsync(y => y.Email == email);
+            if (account == null) return new Result<string>(false, new List<string> { "User account does not exist." });
+
+            //generate code
+            //save code to db
+            //send code via email
+            //return result
+        }
     }
 }
