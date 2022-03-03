@@ -25,10 +25,9 @@ namespace IdentityServer.Services
                 {
                     new Claim(ClaimTypes.Name, account.FirstName!),
                     new Claim(ClaimTypes.Surname, account.LastName!),
-                    new Claim(ClaimTypes.Email, account.Email!),
-                    new Claim(ClaimTypes.MobilePhone, account.PhoneNumber!),
+                    new Claim(ClaimTypes.Email, account.Email!)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
