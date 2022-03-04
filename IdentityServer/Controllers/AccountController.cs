@@ -66,6 +66,9 @@ namespace IdentityServer.Controllers
         public async Task<IActionResult> ResetPassword(string email)
         {
             var result = await _accountRepository.GetResetPasswordCodeAsync(email);
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }

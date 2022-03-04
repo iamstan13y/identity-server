@@ -9,12 +9,14 @@ namespace IdentityServer.Models.Repository
         private readonly ApplicationDbContext _context;
         private readonly IPasswordService _passwordService;
         private readonly IJwtService _jwtService;
+        private readonly ICodeGeneratorService _codeGeneratorService;
 
-        public AccountRepository(ApplicationDbContext context, IPasswordService passwordService, IJwtService jwtService)
+        public AccountRepository(ApplicationDbContext context, IPasswordService passwordService, IJwtService jwtService, ICodeGeneratorService codeGeneratorService)
         {
             _context = context;
             _passwordService = passwordService;
             _jwtService = jwtService;
+            _codeGeneratorService = codeGeneratorService;
         }
 
         public async Task<Result<Account>> CreateAsync(Account account)
@@ -104,10 +106,11 @@ namespace IdentityServer.Models.Repository
             var account = await _context.Accounts!.SingleOrDefaultAsync(y => y.Email == email);
             if (account == null) return new Result<string>(false, new List<string> { "User account does not exist." });
 
-            //generate code
+            var verificationCode = await _codeGeneratorService.GenerateVerificationCode();
+
             //save code to db
             //send code via email
-            //return result
+            return null;
         }
     }
 }
