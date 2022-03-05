@@ -108,8 +108,13 @@ namespace IdentityServer.Models.Repository
 
             var verificationCode = await _codeGeneratorService.GenerateVerificationCode();
 
-            //save code to db
-            //await _context.GenerateCodes
+            await _context.GeneratedCodes!.AddAsync(new GeneratedCode
+            {
+                Code = verificationCode,
+                UserEmail = account.Email,
+                DateCreated = DateTime.Now
+            });
+
             await _context.SaveChangesAsync();
             //send code via email
             return null;
