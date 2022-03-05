@@ -7,16 +7,20 @@ namespace IdentityServer.Models.Repository
     public class AccountRepository : IAccountRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
         private readonly IPasswordService _passwordService;
         private readonly IJwtService _jwtService;
         private readonly ICodeGeneratorService _codeGeneratorService;
+        private readonly IEmailService _emailService;
 
-        public AccountRepository(ApplicationDbContext context, IPasswordService passwordService, IJwtService jwtService, ICodeGeneratorService codeGeneratorService)
+        public AccountRepository(ApplicationDbContext context, IConfiguration configuration, IPasswordService passwordService, IJwtService jwtService, ICodeGeneratorService codeGeneratorService, IEmailService emailService)
         {
             _context = context;
+            _configuration = configuration;
             _passwordService = passwordService;
             _jwtService = jwtService;
             _codeGeneratorService = codeGeneratorService;
+            _emailService = emailService;
         }
 
         public async Task<Result<Account>> CreateAsync(Account account)
@@ -116,8 +120,17 @@ namespace IdentityServer.Models.Repository
             });
 
             await _context.SaveChangesAsync();
-            //send code via email
-            return null;
+           
+            var emailResult = await _emailService.SendEmailAsync(new EmailRequest
+            {
+                Body = string.Format(_configuration["EmailService:ResetCodeBody"], verificationCode),
+                Subject = _configuration["EmailService:ResetCodeSubject"],
+                To = account.Email
+            });
+
+            if (!emailResult.Success) return emailResult;
+
+            return new Result<string>("Verification code has been sent to your email.");
         }
     }
 }
