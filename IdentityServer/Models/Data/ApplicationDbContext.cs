@@ -9,5 +9,6 @@ namespace IdentityServer.Models.Data
 
         }
         public DbSet<Account>? Accounts { get; set; }
+        public DbSet<GeneratedCode>? GeneratedCodes { get; set; }
     }
 }

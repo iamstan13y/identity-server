@@ -109,6 +109,8 @@ namespace IdentityServer.Models.Repository
             var verificationCode = await _codeGeneratorService.GenerateVerificationCode();
 
             //save code to db
+            await _context.GenerateCodes
+            await _context.SaveChangesAsync();
             //send code via email
             return null;
         }
