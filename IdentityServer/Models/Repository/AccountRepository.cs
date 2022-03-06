@@ -132,5 +132,23 @@ namespace IdentityServer.Models.Repository
 
             return new Result<string>("Verification code has been sent to your email.");
         }
+
+        public async Task<Result<Account>> ResetPasswordAsync(ResetPasswordRequest resetPassword)
+        {
+            var account = await _context.Accounts!.Where(x => x.Email == resetPassword.UserEmail).FirstOrDefaultAsync();
+            var verifyCode = await _context.GeneratedCodes!
+                .Where(x => x.UserEmail == resetPassword.UserEmail && 
+                x.DateCreated.AddMinutes(5) >= DateTime.Now)
+                .FirstOrDefaultAsync();
+
+            if (verifyCode == null) return new Result<Account>(false, new List<string> { "Invalid password reset code provided." });
+
+            account!.Password =  _passwordService.HashPassword(resetPassword.NewPassword!);
+
+            _context.Update(account);
+            await _context.SaveChangesAsync();
+
+            return new Result<Account>(account, new List<string> { "Your password has been resetted successfully." });
+        }
     }
 }

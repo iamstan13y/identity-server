@@ -12,5 +12,6 @@ namespace IdentityServer.Models.Repository
         Task<Result<Account>> LoginAsync(LoginRequest login);
         Task<Result<Account>> ChangePasswordAsync(ChangePasswordRequest changePassword);
         Task<Result<string>> GetResetPasswordCodeAsync(string email);
+        Task<Result<Account>> ResetPasswordAsync(ResetPasswordRequest resetPassword);
     }
 }

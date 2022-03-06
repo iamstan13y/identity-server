@@ -62,10 +62,22 @@ namespace IdentityServer.Controllers
 
         [HttpGet("reset-password/verification-code/{email}")]
         [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword(string email)
         {
             var result = await _accountRepository.GetResetPasswordCodeAsync(email);
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Account>), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        {
+            var result = await _accountRepository.ResetPasswordAsync(request);
             if (!result.Success) return BadRequest(result);
 
             return Ok(result);
